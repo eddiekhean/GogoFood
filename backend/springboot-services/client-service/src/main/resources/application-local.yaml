@@ -1,0 +1,116 @@
+# ==========================
+#  SPRING PROFILE
+# ==========================
+spring:
+  profiles:
+    active: local
+
+  # ==========================
+  #  DATASOURCE
+  # ==========================
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # ==========================
+  #  JPA / HIBERNATE
+  # ==========================
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # ==========================
+  #  REDIS / CACHE
+  # ==========================
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 60000
+  cache:
+    type: redis
+
+  # ==========================
+  #  SECURITY / OAUTH2
+  # ==========================
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Google
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+  application:
+    name: client-service
+  cloud:
+    discovery:
+          enabled: true
+    loadbalancer:
+          enabled: true
+    config:
+          enabled: false
+
+# ==========================
+#  SERVER CONFIG
+# ==========================
+server:
+  port: 8081
+  ssl:
+    enabled: false
+
+# ==========================
+#  EUREKA / SPRING CLOUD
+# ==========================
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL}
+    register-with-eureka: true
+    fetch-registry: true
+
+
+# ==========================
+#  JWT CONFIG
+# ==========================
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+# ==========================
+#  CLOUDINARY CONFIG
+# ==========================
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+# ==========================
+#  MAIL CONFIG
+# ==========================
+mail:
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+
+# ==========================
+#  LOGGING
+# ==========================
+logging:
+  level:
+    org.springframework.security: DEBUG

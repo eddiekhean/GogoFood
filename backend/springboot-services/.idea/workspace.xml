@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b4fa13fb-294c-4ee5-b05f-2b8b3fadc298" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/gogofood-web/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/gogofood-web/package-lock.json" afterDir="false" />
-    </list>
+    <list default="true" id="b4fa13fb-294c-4ee5-b05f-2b8b3fadc298" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,7 +97,7 @@
       <workItem from="1757661272702" duration="1633000" />
       <workItem from="1757767688591" duration="639000" />
       <workItem from="1758002282758" duration="25000" />
-      <workItem from="1759897901353" duration="35000" />
+      <workItem from="1759897901353" duration="315000" />
     </task>
     <servers />
   </component>

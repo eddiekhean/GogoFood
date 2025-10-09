@@ -9,14 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.Date;
-import java.util.UUID;
+
 
 @Component
 public class JwtUtil {

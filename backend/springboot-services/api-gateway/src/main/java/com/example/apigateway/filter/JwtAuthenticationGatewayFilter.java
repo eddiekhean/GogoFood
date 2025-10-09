@@ -20,7 +20,7 @@ public class JwtAuthenticationGatewayFilter implements GlobalFilter {
     private JwtUtil jwtUtils;
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/auth/login", "/auth/register", "/swagger-ui", "/v3/api-docs", "/error"
+            "/auth/login","/auth/forgot-password","/auth/reset-password", "/auth/register", "/swagger-ui", "/v3/api-docs", "/error"
     );
 
     @Override

@@ -16,13 +16,4 @@ spring:
 server:
   port: 8080
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: https://discovery-service-1s4c.onrender.com/eureka/
 
-jwt:
-  secret: g7Dxm4ZK6BvNUdYp0nXcW93RflsQEp1M2jhVAGuqSyLktFeiH3oTazJYCNbPXrwL
-  expiration: 86400000

@@ -3,9 +3,9 @@ spring:
   #  DATASOURCE
   # ==========================
   datasource:
-    url: jdbc:postgresql://ep-misty-hill-a15ws4qr-pooler.ap-southeast-1.aws.neon.tech:5432/clien-service?sslmode=require
-    username: neondb_owner
-    password: npg_6ROBVwsIM7HA
+    url: jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
+    username: postgres.scdyxoyjawyfbkpnoezr
+    password: 06080410Kk@
     driver-class-name: org.postgresql.Driver
   mail:
     host: smtp.gmail.com
@@ -23,7 +23,7 @@ spring:
   # ==========================
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:

@@ -4,9 +4,11 @@ import com.example.springbootservices.config.CurrentUserProvider;
 import com.example.springbootservices.dto.*;
 import com.example.springbootservices.model.entites.User;
 import com.example.springbootservices.model.enums.Status;
+import com.example.springbootservices.service.OtpService;
 import com.example.springbootservices.service.UserService;
 import com.example.springbootservices.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,6 +53,9 @@ public class AuthController {
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    OtpService otpService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
@@ -120,47 +125,47 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam String channel,
-            @RequestParam String to) {
+    public ResponseEntity<?> forgotPassword(
+            @RequestParam String to) throws MessagingException {
         Map<String, String> response = new HashMap<>();
         Optional<User> optionalUser = userService.findByEmail(to);
         if (optionalUser.isEmpty()) {
             response.put("message", "Email không tồn tại trong hệ thống");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-//        otpService.sendOtp(channel, to);
-        response.put("message", "OTP đã được gửi qua " + channel);
+        otpService.sendOtp(to);
+        response.put("message", "OTP đã được gửi qua email" );
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/reset-password")
-//    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody ResetPasswordRequest request) {
-//        Map<String, String> response = new HashMap<>();
-//
-//        // 1. Kiểm tra OTP
-////        boolean validOtp = otpService.verifyOtp(request.getEmail(), request.getOtp());
-//        if (!validOtp) {
-//            response.put("message", "OTP không hợp lệ hoặc đã hết hạn");
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//        }
-//
-//        // 2. Tìm user
-//        Optional<User> optionalUser = userService.findByEmail(request.getEmail());
-//        if (optionalUser.isEmpty()) {
-//            response.put("message", "Email không tồn tại");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-//        }
-//
-//        User user = optionalUser.get();
-//
-//        // 3. Mã hóa mật khẩu mới
-//        String hashedPassword = passwordEncoder.encode(request.getNewPassword());
-//        user.setPassword(hashedPassword);
-//        userService.save(user); // hoặc userRepository.save(user);
-//
-//        response.put("message", "Đặt lại mật khẩu thành công");
-//        return ResponseEntity.ok(response);
-//    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody ResetPasswordRequest request) {
+        Map<String, String> response = new HashMap<>();
+
+//         1. Kiểm tra OTP
+        boolean validOtp = otpService.verifyOtp(request.getEmail(), request.getOtp());
+        if (!validOtp) {
+            response.put("message", "OTP không hợp lệ hoặc đã hết hạn");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // 2. Tìm user
+        Optional<User> optionalUser = userService.findByEmail(request.getEmail());
+        if (optionalUser.isEmpty()) {
+            response.put("message", "Email không tồn tại");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        User user = optionalUser.get();
+
+        // 3. Mã hóa mật khẩu mới
+        String hashedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(hashedPassword);
+        userService.save(user); // hoặc userRepository.save(user);
+
+        response.put("message", "Đặt lại mật khẩu thành công");
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/me/delete")
     public ResponseEntity<?> deleteCurrentUser() {

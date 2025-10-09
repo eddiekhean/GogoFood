@@ -26,9 +26,9 @@ public class RestaurantProfileController {
 
     @Autowired
     private final CurrentUserProvider currentUserProvider;
+
     @Autowired
     private final RestaurantProfileService restaurantProfileService;
-
     @Operation(
             summary = "Cập nhật thông tin nhà hàng",
             description = "Cập nhật các thông tin cơ bản của nhà hàng như tên, mô tả, ảnh, giờ mở cửa,..."
@@ -65,7 +65,6 @@ public class RestaurantProfileController {
             )
             @RequestBody CreateRestaurantProfileRequest request
     ) throws AccessDeniedException {
-        restaurantProfileService.create(request);
         return ResponseEntity.ok("Tạo nhà hàng thành công");
     }
 

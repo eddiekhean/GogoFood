@@ -7,7 +7,17 @@ spring:
     username: neondb_owner
     password: npg_6ROBVwsIM7HA
     driver-class-name: org.postgresql.Driver
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: chihwuwhulight@gmail.com
+    password: vjsg vwim snyf bfyo
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   # ==========================
   #  JPA / HIBERNATE
   # ==========================
@@ -51,6 +61,7 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+
 
   application:
     name: client-service

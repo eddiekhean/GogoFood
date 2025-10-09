@@ -21,9 +21,4 @@ public class CurrentUserProvider {
     public String getUsername() {
         return request.getHeader("X-User-Name");
     }
-
-    public String getRole() {
-        return request.getHeader("X-Role");
-    }
-
 }

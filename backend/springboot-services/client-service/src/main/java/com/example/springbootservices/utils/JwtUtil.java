@@ -2,61 +2,102 @@ package com.example.springbootservices.utils;
 
 import com.example.springbootservices.dto.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
+import java.nio.file.Files;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
-import org.springframework.security.core.GrantedAuthority;
 
 
 @Component
 public class JwtUtil {
 
-    private final String jwtSecret;
-    private final Long jwtExpiration;
+    @Value("${jwt.access-expiration}")
+    private long accessExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
+
+    private final PrivateKey privateKey;
+    private final PublicKey publicKey;
 
     public JwtUtil(
-            @Value("${jwt.secret}") String jwtSecret,
-            @Value("${jwt.expiration}") Long jwtExpiration
-    ) {
-        this.jwtSecret = jwtSecret;
-        this.jwtExpiration = jwtExpiration;
+            @Value("${jwt.private-key-path}") String privateKeyPath,
+            @Value("${jwt.public-key-path}") String publicKeyPath
+    ) throws Exception {
+        this.privateKey = loadPrivateKey(privateKeyPath);
+        this.publicKey = loadPublicKey(publicKeyPath);
     }
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    private PrivateKey loadPrivateKey(String path) throws Exception {
+        var file = ResourceUtils.getFile(path);
+        String key = new String(Files.readAllBytes(file.toPath()))
+                .replaceAll("-----BEGIN ([A-Z ]+)-----", "")
+                .replaceAll("-----END ([A-Z ]+)-----", "")
+                .replaceAll("\\s+", "");
+        byte[] decoded = Base64.getDecoder().decode(key);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        UserDetailsImpl user = (UserDetailsImpl) userDetails;
-
-        String role = user.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_USER");
-
+    private PublicKey loadPublicKey(String path) throws Exception {
+        var file = ResourceUtils.getFile(path);
+        String key = new String(Files.readAllBytes(file.toPath()))
+                .replaceAll("-----BEGIN ([A-Z ]+)-----", "")
+                .replaceAll("-----END ([A-Z ]+)-----", "")
+                .replaceAll("\\s+", "");
+        byte[] decoded = Base64.getDecoder().decode(key);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePublic(spec);
+    }
+    // --- Sinh Access Token ---
+    public String generateAccessToken(UserDetailsImpl user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("userId", user.getId().toString())
-                .claim("role", role)
+                .claim("userId", user.getId())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
-    @PostConstruct
-    public void check() {
-        System.out.println(">>> JWT_SECRET = [" + jwtSecret + "]");
-        System.out.println(">>> Length = " + (jwtSecret != null ? jwtSecret.length() : "null"));
+
+    // --- Sinh Refresh Token ---
+    public String generateRefreshToken(UserDetailsImpl user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("userId", user.getId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .compact();
     }
 
+    // --- Verify token ---
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(publicKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            extractClaims(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+    }
 }

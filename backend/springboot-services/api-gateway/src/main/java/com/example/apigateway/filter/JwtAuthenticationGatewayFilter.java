@@ -1,6 +1,7 @@
 package com.example.apigateway.filter;
 
-import com.example.apigateway.utils.JwtUtils;
+import com.example.apigateway.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -11,13 +12,12 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class JwtAuthenticationGatewayFilter implements GlobalFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtil jwtUtils;
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/auth/login", "/auth/register", "/swagger-ui", "/v3/api-docs", "/error"
@@ -30,18 +30,14 @@ public class JwtAuthenticationGatewayFilter implements GlobalFilter {
 
         if (isPublicPath(path)) return chain.filter(exchange);
 
-        if (token != null && jwtUtils.validateToken(token)) {
-            UUID userId = jwtUtils.getUserIdFromToken(token);
-            String userName = jwtUtils.getUsernameFromToken(token);
-            String role = jwtUtils.getRoleFromToken(token);
-
-            // In ra log để chắc chắn header được thêm
-            System.out.println("🔐 Injecting Headers -> userId: " + userId + ", userName: " + userName + ", role: " + role);
+        if (token != null && !jwtUtils.validateToken(token).isEmpty()) {
+            Claims claims = jwtUtils.validateToken(token);
+            String userId = claims.get("userId", String.class);
+            String role = claims.get("role", String.class);
 
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header("Authorization", "Bearer " + token)
-                    .header("X-User-Id", userId.toString())
-                    .header("X-User-Name", userName)
+                    .header("X-User-Id", userId)
                     .header("X-Role", role)
                     .build();
 

@@ -1,5 +1,6 @@
 package com.example.springbootservices.dto;
 
+import com.example.springbootservices.model.entites.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,6 +61,13 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return authorities.stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse(null); // VD: "ROLE_CUSTOMER"
     }
 
 }

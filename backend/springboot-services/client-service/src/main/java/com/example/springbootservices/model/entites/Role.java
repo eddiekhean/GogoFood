@@ -12,10 +12,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "roles")
 public class Role {
-
     @Id
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @GeneratedValue(generator = "uuid2")
+    @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
     private UUID id;
 
     @Column(unique = true, nullable = false)

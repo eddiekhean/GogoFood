@@ -1,6 +1,6 @@
-package com.example.emailservice.controller;
+package com.example.springbootservices.controller;
 
-import com.example.emailservice.dto.OtpSenderRequest;
+import com.example.springbootservices.dto.OtpSenderRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @RestController
 @RequestMapping("/api/email")
-public class OtpMailController {
+public class MailController {
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
@@ -45,5 +45,4 @@ public class OtpMailController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi gửi mail: " + e.getMessage());
         }
     }
-
 }

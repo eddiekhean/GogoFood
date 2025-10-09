@@ -1,6 +1,5 @@
 package com.example.springbootservices.config;
 
-import com.example.springbootservices.controller.CustomOAuth2SuccessHandler;
 import com.example.springbootservices.service.CustomUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,6 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
-    @Autowired
-    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @Autowired
     private HeaderAuthenticationFilter headerAuthenticationFilter;
 

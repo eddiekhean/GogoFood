@@ -1,11 +1,11 @@
 package com.example.springbootservices.model.entites;
 
-import ch.qos.logback.core.net.server.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -20,6 +20,7 @@ public class RestaurantProfile {
 
     @Id
     @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
     private UUID id;
 
     private String name;             // Tên nhà hàng

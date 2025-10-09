@@ -23,6 +23,7 @@ public class User {
 
     @Id
     @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
     private UUID id;
 
     @Column(unique = true, nullable = false)

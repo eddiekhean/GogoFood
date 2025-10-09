@@ -20,7 +20,9 @@ public class Address {
 
     @Id
     @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
     private UUID id;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

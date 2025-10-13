@@ -31,29 +31,11 @@ public class AdminUserController {
     @Autowired
     UserService userService;
 
-    @Operation(
-            summary = "Lấy danh sách tất cả người dùng",
-            description = "API này trả về danh sách tất cả người dùng trong hệ thống. Chỉ ADMIN mới có quyền truy cập."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công"),
-            @ApiResponse(responseCode = "403", description = "Không có quyền truy cập"),
-            @ApiResponse(responseCode = "500", description = "Lỗi hệ thống")
-    })
     @GetMapping("/list-user")
     public List<User> allUser() {
         return userService.getAllUser();
     }
 
-    @Operation(
-            summary = "Lấy danh sách khách hàng",
-            description = "Trả về danh sách khách hàng ở dạng phân trang. Kết quả sắp xếp theo thời gian tạo (mới nhất trước)."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Truy vấn thành công"),
-            @ApiResponse(responseCode = "403", description = "Không có quyền truy cập"),
-            @ApiResponse(responseCode = "500", description = "Lỗi hệ thống")
-    })
     @GetMapping("/all-customers")
     public ResponseEntity<Page<CustomerAdminView>> getAllCustomers(
             @Parameter(description = "Số trang", example = "0")

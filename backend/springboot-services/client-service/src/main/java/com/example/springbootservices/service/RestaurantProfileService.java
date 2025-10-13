@@ -27,7 +27,7 @@ public class RestaurantProfileService {
     @Autowired
     CurrentUserProvider currentUserProvider;
 
-    public void create(CreateRestaurantProfileRequest request) throws AccessDeniedException {
+    public RestaurantProfileResponse create(CreateRestaurantProfileRequest request) throws AccessDeniedException {
         UUID currentUserId = currentUserProvider.getCurrentUserId();
 
 
@@ -52,6 +52,7 @@ public class RestaurantProfileService {
         profile.setUser(currentUser);
 
         restaurantProfileRepository.save(profile);
+        return null;
     }
 
     public void update(UUID id, UpdateRestaurantProfileRequest request) {

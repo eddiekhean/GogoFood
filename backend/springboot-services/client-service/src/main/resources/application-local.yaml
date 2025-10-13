@@ -7,6 +7,10 @@ spring:
     username: postgres.scdyxoyjawyfbkpnoezr
     password: 06080410Kk@
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      data-source-properties:
+        cachePrepStmts: false
   mail:
     host: smtp.gmail.com
     port: 587
@@ -73,6 +77,16 @@ spring:
       enabled: true
     config:
       enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: gogo-food-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 # ==========================
 #  SERVER CONFIG

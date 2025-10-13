@@ -28,7 +28,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-@Tag(name = "User Account", description = "Các API liên quan đến tài khoản người dùng")
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -38,9 +39,6 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Autowired
     private UserService userService;
@@ -76,13 +74,19 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        try {
-            request.setPassword(passwordEncoder.encode(request.getPassword()));
-            User user = userService.register(request);
-            return ResponseEntity.ok("User registered successfully!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<?> register(
+            @RequestParam(defaultValue = "customer") String type,
+            @RequestBody RegisterRequest request
+    ) {
+        switch (type.toLowerCase()) {
+            case "restaurant":
+                userService.registerRestaurant(request);
+                return ResponseEntity.ok("Đăng ký tài khoản nhà hàng thành công");
+            case "customer":
+                userService.register(request);
+                return ResponseEntity.ok("Đăng ký khách hàng thành công!");
+            default:
+                return ResponseEntity.badRequest().body("Loại tài khoản không hợp lệ!");
         }
     }
     @GetMapping("/me")
@@ -189,4 +193,25 @@ public class AuthController {
                     .body("Lỗi khi upload ảnh: " + e.getMessage());
         }
     }
+    @PostMapping("/verify/send")
+    public ResponseEntity<?> sendVerificationOtp() throws MessagingException {
+        User user = userService.getUserByID(currentUserProvider.getCurrentUserId());
+        userService.sendVerificationOtp(user.getId());
+        return ResponseEntity.ok(Map.of("message", "OTP đã được gửi đến email của bạn"));
+    }
+    @PostMapping("/verify/confirm")
+    public ResponseEntity<?> confirmOtp(@RequestParam String otp) {
+        UUID userId = currentUserProvider.getCurrentUserId();
+        String email = userService.getUserByID(userId).getEmail();
+        boolean validOtp = otpService.verifyOtp(email, otp);
+        if (validOtp) {
+            userService.activateUserByID(userId); // đánh dấu user đã xác minh
+            return ResponseEntity.ok(Map.of("message", "Xác minh thành công"));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Mã OTP không hợp lệ hoặc đã hết hạn"));
+        }
+    }
+
+
 }

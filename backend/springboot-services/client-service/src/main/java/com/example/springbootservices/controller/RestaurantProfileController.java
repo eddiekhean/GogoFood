@@ -53,19 +53,18 @@ public class RestaurantProfileController {
         return ResponseEntity.ok("Cập nhật thông tin nhà hàng thành công!");
     }
 
+
     @Operation(
             summary = "Tạo hồ sơ nhà hàng mới",
             description = "Khởi tạo hồ sơ nhà hàng dành cho người dùng có vai trò 'RESTAURANT'"
     )
     @PostMapping
-    public ResponseEntity<?> createRestaurantProfile(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Thông tin nhà hàng cần tạo",
-                    required = true
-            )
+    @PreAuthorize("hasRole('RESTAURANT')")
+    public ResponseEntity<RestaurantProfileResponse> createRestaurantProfile(
             @RequestBody CreateRestaurantProfileRequest request
     ) throws AccessDeniedException {
-        return ResponseEntity.ok("Tạo nhà hàng thành công");
+        RestaurantProfileResponse createdProfile = restaurantProfileService.create(request);
+        return ResponseEntity.ok(createdProfile);
     }
 
     @Operation(

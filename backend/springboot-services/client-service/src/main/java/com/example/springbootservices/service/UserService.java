@@ -11,11 +11,13 @@ import com.example.springbootservices.model.enums.Status;
 import com.example.springbootservices.model.projection.CustomerAdminView;
 import com.example.springbootservices.reponsitory.RoleRepository;
 import com.example.springbootservices.reponsitory.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +40,11 @@ public class UserService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Autowired
+    private OtpService otpService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Transactional
     public User register(RegisterRequest request) {
@@ -57,7 +64,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(Status.INACTIVE);
         user.setRole(role);
         return userRepository.save(user);
@@ -67,8 +74,8 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
     }
     @Transactional
-    public Boolean activateUserByEmail(String email) {
-        User user = userRepository.findByEmail(email)
+    public Boolean activateUserByID(UUID id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user"));
 
         user.setStatus(Status.ACTIVE);
@@ -133,6 +140,35 @@ public class UserService {
 
     public User getUserByID(UUID uuid) {
         return userRepository.getUserById(uuid);
+    }
+    @Transactional
+    public User registerRestaurant(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Role role = roleRepository.findByName("RESTAURANT")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setStatus(Status.INACTIVE);
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+    @Transactional
+    public User sendVerificationOtp(UUID userID) throws MessagingException {
+        User user = userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        otpService.sendOtp(user.getEmail());
+        return user;
     }
 }
 

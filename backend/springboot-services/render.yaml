@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: gogofood-backend
-    env: docker
-    repo: https://github.com/eddiekhean/GogoFood
-    region: singapore
-    branch: main
-    rootDir: springboot-services
-    dockerCommand: docker-compose up

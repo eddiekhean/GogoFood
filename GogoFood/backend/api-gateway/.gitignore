@@ -1,0 +1,47 @@
+# System / IDE / OS
+.idea/
+*.iml
+out/
+*.ipr
+*.iws
+.vscode/
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Maven / Gradle
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Spring Boot config
+application-*.yml
+!application-example.yml
+application-local.yml
+.env
+*.env
+*.key
+*.pem
+*.crt
+*.p12
+
+# Databases / Cache / Temp
+*.sqlite
+*.db
+*.h2.db
+*.mv.db
+*.trace.db
+tmp/
+uploads/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Misc
+*.old
+*.orig
